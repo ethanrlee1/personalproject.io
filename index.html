@@ -1,119 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8">
-    <title>Registration Form</title>
+    <title>College Course Registration</title>
     <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <h1>Registration Form</h1>
-    <p>Please fill out this form with the required information</p>
-    <form method="post" action='https://register-demo.freecodecamp.org'>
-      <fieldset>
-        <label for="first-name">Enter Your First Name: <input id="first-name" name="first-name" type="text" required /></label>
-        <label for="last-name">Enter Your Last Name: <input id="last-name" name="last-name" type="text" required /></label>
-        <label for="email">Enter Your Email: <input id="email" name="email" type="email" required /></label>
-        <label for="new-password">Create a New Password: <input id="new-password" name="new-password" type="password" pattern="[a-z0-5]{8,}" required /></label>
-      </fieldset>
-      <fieldset>
-        <legend>Account type (required)</legend>
-        <label for="personal-account"><input id="personal-account" type="radio" name="account-type" class="inline" checked /> Personal</label>
-        <label for="business-account"><input id="business-account" type="radio" name="account-type" class="inline" /> Business</label>
-      </fieldset>
-      <fieldset>
-        <label for="profile-picture">Upload a profile picture: <input id="profile-picture" type="file" name="file" /></label>
-        <label for="age">Input your age (years): <input id="age" type="number" name="age" min="13" max="120" /></label>
-        <label for="referrer">How did you hear about us?
-          <select id="referrer" name="referrer">
-            <option value="">(select one)</option>
-            <option value="1">freeCodeCamp News</option>
-            <option value="2">freeCodeCamp YouTube Channel</option>
-            <option value="3">freeCodeCamp Forum</option>
-            <option value="4">Other</option>
-          </select>
+</head>
+<body>
+    <h1>College Course Registration</h1>
+    <p>Please fill out this form to register for your courses.</p>
+
+    <form method="post" action="submit_registration.php">
+        <fieldset>
+            <label for="first-name">First Name: 
+                <input id="first-name" name="first-name" type="text" required />
+            </label>
+            <label for="last-name">Last Name: 
+                <input id="last-name" name="last-name" type="text" required />
+            </label>
+            <label for="student-id">Student ID: 
+                <input id="student-id" name="student-id" type="text" required />
+            </label>
+            <label for="email">College Email: 
+                <input id="email" name="email" type="email" required />
+            </label>
+        </fieldset>
+
+        <fieldset>
+            <label for="concentration">Select Your Concentration:
+                <select id="concentration" name="concentration" required>
+                    <option value="">(Select one)</option>
+                    <option value="ai">Artificial Intelligence, Robotics, and Gaming</option>
+                    <option value="cybersecurity">Cybersecurity</option>
+                    <option value="data-science">Data Science</option>
+                </select>
+            </label>
+
+            <label for="courses">Select Your Courses (Hold Ctrl or Command to select multiple):
+                <select id="courses" name="courses" multiple required size="5">
+                    <option value="">(Select a concentration first)</option>
+                </select>
+            </label>
+
+            <p>Total Credit Hours: <span id="total-credits">0</span></p>
+            <p>Estimated Tuition Cost: $<span id="total-cost">0</span></p>
+        </fieldset>
+
+        <label for="terms-and-conditions">
+            <input class="inline" id="terms-and-conditions" type="checkbox" required name="terms-and-conditions" /> I agree to the <a href="https://www.freecodecamp.org/news/terms-of-service/" target="_blank">college policies</a>
         </label>
-        <label for="bio">Provide a bio:
-          <textarea id="bio" name="bio" rows="3" cols="30" placeholder="I like coding on the beach..."></textarea>
-        </label>
-      </fieldset>
-      <label for="terms-and-conditions">
-        <input class="inline" id="terms-and-conditions" type="checkbox" required name="terms-and-conditions" /> I accept the <a href="https://www.freecodecamp.org/news/terms-of-service/">terms and conditions</a>
-      </label>
-      <input type="submit" value="Submit" />
+        
+        <input type="submit" value="Register" />
     </form>
+
+    <script>
+        const courseCatalog = {
+            "ai": {
+                "ITSC 4155 - Artificial Intelligence": 3,
+                "ITSC 4156 - Machine Learning": 3,
+                "ITSC 4157 - Robotics": 3,
+                "ITSC 4158 - Game Design and Development": 3
+            },
+            "cybersecurity": {
+                "ITSC 4200 - Cybersecurity Fundamentals": 3,
+                "ITSC 4210 - Ethical Hacking": 3,
+                "ITSC 4220 - Network Security": 3,
+                "ITSC 4230 - Cryptography": 3
+            },
+            "data-science": {
+                "ITSC 4300 - Data Analytics": 3,
+                "ITSC 4310 - Big Data": 3,
+                "ITSC 4320 - Data Visualization": 3,
+                "ITSC 4330 - Statistical Methods": 3
+            }
+        };
+
+        const costPerCreditHour = 300;
+
+        document.getElementById("concentration").addEventListener("change", function() {
+            let concentration = this.value;
+            let courseSelect = document.getElementById("courses");
+            courseSelect.innerHTML = "";
+
+            if (concentration && courseCatalog[concentration]) {
+                for (let course in courseCatalog[concentration]) {
+                    let option = document.createElement("option");
+                    option.value = course;
+                    option.textContent = `${course} (${courseCatalog[concentration][course]} credit hours)`;
+                    courseSelect.appendChild(option);
+                }
+            }
+
+            updateTotal();
+        });
+
+        document.getElementById("courses").addEventListener("change", updateTotal);
+
+        function updateTotal() {
+            let selectedCourses = Array.from(document.getElementById("courses").selectedOptions);
+            let concentration = document.getElementById("concentration").value;
+            let totalCredits = selectedCourses.reduce((sum, course) => sum + courseCatalog[concentration][course.value], 0);
+
+            document.getElementById("total-credits").textContent = totalCredits;
+            document.getElementById("total-cost").textContent = totalCredits * costPerCreditHour;
+        }
+    </script>
+
     <style>
         body {
-  width: 100%;
-  height: 100vh;
-  margin: 0;
-  background-color: #1b1b32;
-  color: #f5f6f7;
-  font-family: Tahoma;
-  font-size: 16px;
-}
+            width: 100%;
+            height: 100vh;
+            margin: 0;
+            background-color: #1b1b32;
+            color: #f5f6f7;
+            font-family: Tahoma, sans-serif;
+            font-size: 16px;
+        }
 
-h1, p {
-  margin: 1em auto;
-  text-align: center;
-}
+        h1, p {
+            text-align: center;
+        }
 
-form {
-  width: 60vw;
-  max-width: 500px;
-  min-width: 300px;
-  margin: 0 auto;
-  padding-bottom: 2em;
-}
+        form {
+            width: 60vw;
+            max-width: 500px;
+            min-width: 300px;
+            margin: 0 auto;
+            padding-bottom: 2em;
+        }
 
-fieldset {
-  border: none;
-  padding: 2rem 0;
-  border-bottom: 3px solid #3b3b4f;
-}
+        fieldset {
+            border: none;
+            padding: 1.5rem 0;
+            border-bottom: 3px solid #3b3b4f;
+        }
 
-fieldset:last-of-type {
-  border-bottom: none;
-}
+        fieldset:last-of-type {
+            border-bottom: none;
+        }
 
-label {
-  display: block;
-  margin: 0.5rem 0;
-}
+        label {
+            display: block;
+            margin: 0.5rem 0;
+        }
 
-input,
-textarea,
-select {
-  margin: 10px 0 0 0;
-  width: 100%;
-  min-height: 2em;
-}
+        input, select {
+            margin: 10px 0;
+            width: 100%;
+            min-height: 2em;
+        }
 
-input, textarea {
-  background-color: #0a0a23;
-  border: 1px solid #0a0a23;
-  color: #ffffff;
-}
+        select[multiple] {
+            height: auto;
+        }
 
-.inline {
-  width: unset;
-  margin: 0 0.5em 0 0;
-  vertical-align: middle;
-}
+        input {
+            background-color: #0a0a23;
+            border: 1px solid #0a0a23;
+            color: #ffffff;
+        }
 
-input[type="submit"] {
-  display: block;
-  width: 60%;
-  margin: 1em auto;
-  height: 2em;
-  font-size: 1.1rem;
-  background-color: #3b3b4f;
-  border-color: white;
-  min-width: 300px;
-}
-
-input[type="file"] {
-  padding: 1px 2px;
-}
+        input[type="submit"] {
+            display: block;
+            width: 60%;
+            margin: 1em auto;
+            height: 2em;
+            font-size: 1.1rem;
+            background-color: #3b3b4f;
+            border-color: white;
+        }
     </style>
-  </body>
+</body>
 </html>
